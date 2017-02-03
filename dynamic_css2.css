@@ -1,0 +1,81 @@
+html {
+    background: url(images/back_res.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+/******Top Bar*******/
+
+#Option {
+    position: absolute;
+    top: 0px;
+    background: #123845;
+    width: 100%;
+    height: 28px;
+    color: white;
+    text-align: left;
+    font-size: 18px;
+    border-radius: 00px 10px 15px 00px;
+}
+#Option span {
+    color: #98D8ED;
+}
+#Option a{
+  color: #98D8ED;
+}
+button{
+  background-color:#ed8223;
+	color:#fff;
+	font-family:'Helvetica Neue',sans-serif;
+	font-size:15px;
+	line-height:30px;
+	border-radius:20px;
+	-webkit-border-radius:20px;
+	-moz-border-radius:20px;
+	border:0;
+	text-shadow:#C17C3A 0 -1px 0;
+	width:120px;
+	height:25px
+}
+/*****Menu Bar******/
+
+.divContainer {
+    background: rgba(255, 255, 255, 0.4);
+    width: 820px;
+    margin: 40px auto;
+    border: 1px dashed black;
+    border-radius: 20px 20px 00px 00px;
+}
+.titleOfRestaurnt {
+    width: 820px;
+    background: #1390BA;
+    margin: 0px auto;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    font-size: 45px;
+    border-radius: 20px;
+}
+.titleOfRestaurnt span {
+    color: black;
+    font-size: 35px;
+    font-family: cursive;
+}
+/*****Body Of menu (Price+ Info+ Option)******/
+
+.containBody {
+    width: 820px;
+    display: block;
+    font-size: 30px;
+    font-family: sans-serif;
+    color: #010C0F;
+    text-align: center;
+}
+.infoInBody {
+    display: block;
+    font-size: 17px;
+    font-family: monospace;
+    text-align: left;
+}

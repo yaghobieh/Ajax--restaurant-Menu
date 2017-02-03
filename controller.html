@@ -1,0 +1,217 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Resturant control panel</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="controller_css.css" />
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="titleSpaner"><img src="images/ControllPanel.png"></div>
+    <div class="container">
+
+    </div>
+    <div id="titleSpaner">
+        <br>
+        <button value="Sendtitle" id="ChangeNameOfres">Edit Page</button>
+    </div>
+</body>
+<script>
+    var obj = null;
+    var $sectionTemple = {'name': '', 'items': [{'name': '', 'description': '', 'price': ''}]};
+    var $unitTemple = {'name': '', 'description': '', 'price': ''};
+    var $newSection = $('<div class="inputSectionsNames">');
+    var $inputNewSection;
+    $container = $('.container');
+
+    function model() {
+        $.ajax('http://www.elm.tools/final/johny/menu', {
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) { //Get the Object from Server
+                obj = res;
+                renderTtitleRest(obj.title);
+                renderSections(res)
+            }
+        });
+    }
+
+    function renderTtitleRest(title) {
+        var $inputTitleText = $('<div class="resTtitle">').text('Edit Resturant title:');
+        var $inputTitle = $('<input id="restitle">').val(title);
+        var $titleContain = $('<div class="insideGrid">');
+        $container.empty();
+
+        $titleContain.append($inputTitleText);
+        $titleContain.append($inputTitle);
+        $container.append($titleContain);
+        $container.append('<hr>');
+    }
+
+    function renderSections(model) {
+        var $SectionsNames = $('<div class="insideGrid">');
+        var $SectionsNewPortion = $('<div class="insideGrid">');
+        var $items = null;
+        model.sections.forEach(function(sections, idx) {
+
+
+
+            var $inputSectionsNames = $('<input>')
+                .val(sections.name)
+                .on('change', function() {
+                    indexSection = idx;
+                    var value = this.value;
+                    changeSectionName(idx, value);
+                });
+
+            var $inputDeleteSection = $('<button id="DeleteLittle">')
+                .text('X')
+                .on('click', function() {
+                    indexSection = idx;
+                    obj.sections.splice(indexSection, 1);
+                    sendModel(); //Send new Deleting Model
+                });
+
+
+            var $inputNewUnit = $('<button id="DeleteLittle">')
+                .text('+')
+                .on('click', function() {
+                    indexSection = idx;
+                    addNewUnit(indexSection);
+                });
+
+            $inputNewSection = $('<button>')
+                .text('+ Section')
+                .on('click', function() {
+                    indexSection = idx;
+                    addNewSection();
+                });
+
+            var $SectionsDivs = $('<div class="inputSectionsNames">');
+
+
+            $SectionsDivs.append($inputSectionsNames);
+            $SectionsDivs.append($inputDeleteSection);
+
+
+            $items = renderItemsInfo(sections, idx);
+
+            $SectionsNames.append($SectionsDivs);
+            $SectionsNames.append($items);
+
+            $SectionsNames.append($inputNewUnit);
+            $SectionsNames.append('<hr>');
+        });
+        $newSection.append($inputNewSection);
+        $container.append($SectionsNames);
+        $container.append($newSection);
+    }
+
+    function renderItemsInfo(sections, index) {
+        var $subItemsName = $('<div class="insideGrid">');
+        sections.items.forEach(function(items, idx) {
+
+            var $inputItemName = $('<input>')
+                .val(items.name)
+                .on('change', function() {
+                    indexSection = idx;
+                    var value = this.value;
+                    changeItemName(index, idx, value);
+                });
+
+            var $inputItemDescription = $('<input>')
+                .val(items.description)
+                .on('change', function() {
+                    indexSection = idx;
+                    var value = this.value;
+                    changeItemDescription(index, idx, value);
+                });
+
+            var $inputItemPrice = $('<input>')
+                .val(items.price)
+                .on('change', function() {
+                    indexSection = idx;
+                    var value = this.value;
+                    changeItemPrice(index, idx, value);
+                });
+
+            var $inputDeleteItem = $('<button id="DeleteLittle">')
+                .text('X')
+                .on('click', function() {
+                    indexSection = idx;
+                    obj.sections[index].items.splice(indexSection, 1);
+                    sendModel(); //Send new Deleting Model
+                });
+
+
+            var $SectionsDivs = $('<div class="inputSectionsItems">');
+            $SectionsDivs.append($inputItemName);
+            $SectionsDivs.append($inputItemDescription);
+            $SectionsDivs.append($inputItemPrice);
+            $SectionsDivs.append($inputDeleteItem);
+
+            $subItemsName.append($SectionsDivs);
+
+        });
+
+        return $subItemsName;
+
+    }
+
+    function changeSectionName(index, name) {
+
+        obj.sections[index].name = name;
+    }
+
+    function changeItemName(indexS, indexI, itemNewName) {
+
+        obj.sections[indexS].items[indexI].name = itemNewName;
+    }
+
+    function changeItemDescription(indexS, indexI, itemNewDescription) {
+
+        obj.sections[indexS].items[indexI].description = itemNewDescription;
+    }
+
+    function changeItemPrice(indexS, indexI, itemNewPrice) {
+
+        obj.sections[indexS].items[indexI].price = itemNewPrice;
+    }
+
+    function addNewUnit(indexS){
+
+        obj.sections[indexS].items.push($unitTemple);
+        sendModel();
+    }
+
+    function addNewSection(){
+
+        obj.sections.push($sectionTemple);
+        sendModel();
+    }
+
+    $('#ChangeNameOfres').click(function() {
+        obj.title = $('#restitle').val();
+        sendModel();
+
+    });
+
+    function sendModel() {
+        $.ajax('http://www.elm.tools/final/johny/menu', {
+            type: 'PUT',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(obj),
+            success: function(res) {
+                console.log(res);
+            },
+            error: function(res) {
+                console.log(res);
+            }
+        });
+    }
+
+    model();
+</script>

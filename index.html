@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link id="dynamic_css" rel="stylesheet" type="text/css" href="dynamic_css.css" />
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="Option">Weclcome to <span id="titleOfMenuTop"></span> | Select your design:
+        <button onclick="swapStyleSheet('dynamic_css2.css')">Ocean</button>
+        <button onclick="swapStyleSheet('dynamic_css.css')">Red expensive</button> |
+        for edit page's values <a href="controller.html" target="_blank">Click here</a>
+    </div>
+    <div class="divContainer">
+        <div class="titleOfRestaurnt">Today'S Special in
+            <span id="titleOfMenu"></span></div>
+        <main id="main-container"></main>
+
+    </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+          var getStylesheet = localStorage.getItem('saveLastStylesheet');
+            $("#dynamic_css").attr("href", getStylesheet);
+        });
+
+        function swapStyleSheet(sheet) { //Change css sytleSheet
+            $("#dynamic_css").attr("href", sheet);
+            localStorage.setItem('saveLastStylesheet', sheet);
+        }
+
+        function getInfoMenu() {
+            $.ajax('http://www.elm.tools/final/johny/menu', {
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    getTitleResturant(res); //Get the title
+                    for (var i = 0; i < res.sections.length; i++) {
+                        renderSection(res.sections[i]);
+                    }
+                }
+            });
+        }
+
+        function renderSection(section) {
+            var $container = $('<div>');
+            var $title = $('<div class="containBody">').text(section.name);
+            $container.append($title);
+
+            var items = section.items;
+            for (var i = 0; i < items.length; i++) {
+                var $itemsList = renderItems(items[i]);
+                $container.append($itemsList);
+            }
+
+            $('#main-container').append($container);
+        }
+
+        function renderItems(items) {
+
+            return $('<div class="infoInBody">').text(items.name + ' | ' +
+                items.description + '.................... ' + items.price + '$');
+        }
+
+        function getTitleResturant(itemSection) {
+            document.title = itemSection.title;
+            $('#titleOfMenuTop').html(itemSection.title);
+            $('#titleOfMenu').html(itemSection.title);
+        }
+
+        getInfoMenu();
+    </script>
+</body>
+
+</html>

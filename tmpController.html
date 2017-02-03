@@ -1,0 +1,155 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Resturant control panel</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="controller_css.css" />
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="titleSpaner">Control panel</div>
+    <div class="container">
+        <div class="resTtitle">
+            <spna>resturant name:</span>
+        </div>
+        <div class="resTtitleCenter">
+            <textarea cols="50" id="restitle" placeholder="Edit resturant Title"></textarea>
+        </div>
+        <hr>
+    </div>
+    <div id="titleSpaner">
+        <button value="Sendtitle" id="ChangeNameOfres">Edit Page</button>
+    </div>
+</body>
+<script>
+    var obj = null;
+
+
+    function model() {
+        $.ajax('http://www.elm.tools/final/johny/menu', {
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) { //Get the Object from Server
+                // getInfo(res);
+                obj = res;
+                render(obj);
+            }
+        });
+    }
+
+    function render(model) {
+        var $subName = $('<div class="resSubs">');
+        $container = $('.container');
+        $container.empty();
+        model.sections.forEach(function(section, idx) {
+            var $input = $('<input>')
+                .val(section.name)
+                .on('change', function() {
+                    var value = this.value;
+                    changeSectionName(idx, value);
+
+                });
+            $subName.append($input);    
+            $container.append($subName);
+        });
+
+        function changeSectionName(index, newName) {
+            model.sections[index].name = newName;
+        }
+
+        $container.append($('<button>console</button>').click(function() {
+            console.log(model);
+        }));
+    }
+
+    function getInfo(resturantInfo) {
+        $('#restitle').html(resturantInfo.title);
+
+        for (var i = 0; i < resturantInfo.sections.length; i++) {
+            sectionsIndex = i; //Get the last Index and set Index for sections
+            renderSection(resturantInfo.sections[i]);
+        }
+    }
+
+    function renderSection(section) {
+        var $container = $('<div class="blockInside">');
+        var $subCon = $('<div class="resTtitle">');
+        var $subConRight = $('<div class="resTtitleCenter">');
+        var $textArea = $('<textarea cols="50">').text(section.name).attr('id', sectionsIndex + 's');
+        var $itemName = $('<span>').text("Edit " + section.name);
+
+        $subCon.append($itemName);
+        $subConRight.append($textArea);
+
+
+        $container.append($subCon);
+        $container.append($subConRight);
+
+        var items = section.items;
+        for (var i = 0; i < items.length; i++) {
+            itemsListOfLength.push(items.length);
+            itemsNameIndex = i + 'n';
+            itemsdescriptionIndex = i * 100;
+            itemsPriceIndex = i * 1000;
+            var $itemsList = renderItems(items[i]);
+            $container.append($itemsList);
+        }
+
+        $('.container').append($container);
+        $('.container').append('<hr>');
+    }
+
+    function renderItems(items) {
+        var $container = $('<div class="blockInside">');
+        var $subName = $('<div class="resSubs">');
+
+        var $topName = items.name;
+        var $name = $('<textarea cols="50">').text(items.name).attr('id', itemsNameIndex);
+        var $description = $('<textarea cols="50">').text(items.description).attr('id', itemsdescriptionIndex);
+        var $price = $('<textarea cols="50">').text(items.price).attr('id', itemsPriceIndex);
+
+        $subName.append('<hr>');
+        $subName.append($topName);
+        $subName.append($name);
+        $subName.append($description);
+        $subName.append($price);
+
+        return $container.append($subName);
+        return $container;
+    }
+
+    $('#ChangeNameOfres').click(function() {
+        obj.title = $('#restitle').val();
+
+        for (var i = 0; i < sectionsIndex; i++) {
+            getSectionsInformations($('#' + i + 's').val(), i);
+        }
+
+        $.ajax('http://www.elm.tools/final/johny/menu', {
+            type: 'PUT',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(obj),
+            success: function(res) {
+                console.log(res);
+            },
+            error: function(res) {
+                console.log(res);
+            }
+        });
+    });
+
+    function getSectionsInformations(text, index) {
+        obj.sections[index].name = text;
+        for (var j = 0; j < itemsListOfLength[index]; j++)
+            getInformations($('#' + j + 'n').val(), index, j);
+    }
+
+    function getInformations(text, indexSections, indexItems) {
+        obj.sections[indexSections].items[indexItems].name = text;
+    }
+
+    model();
+</script>
